@@ -319,25 +319,25 @@ else:
     else:
         recommendation = "Poor Match"
 
-    return {
-            "Address": listing.address,
-            "Fit Score": score,
-            "Recommendation": recommendation,
-            "Price": listing.price,
-            "Beds": listing.bedrooms,
-            "Baths": listing.bathrooms,
-            "Sq Ft": listing.square_feet,
-            "Distance": None if location["distance"] is None else round(location["distance"], 1),
-            "School Status": school["overall_status"],
-            "Listing URL": listing.listing_url,
-            "Agent": listing.agent_name,
-            "Agent Contact": listing.agent_contact,
-            "Strengths": strengths,
-            "Concerns": concerns,
-            "Garage": "Yes" if listing.has_garage else "No",
-            "Garage Spaces": listing.garage_spaces,
-            "Acres": listing.acres,
-    }
+        return {
+                "Address": listing.address,
+                "Fit Score": score,
+                "Recommendation": recommendation,
+                "Price": listing.price,
+                "Beds": listing.bedrooms,
+                "Baths": listing.bathrooms,
+                "Sq Ft": listing.square_feet,
+                "Distance": None if location["distance"] is None else round(location["distance"], 1),
+                "School Status": school["overall_status"],
+                "Listing URL": listing.listing_url,
+                "Agent": listing.agent_name,
+                "Agent Contact": listing.agent_contact,
+                "Strengths": strengths,
+                "Concerns": concerns,
+                "Garage": "Yes" if listing.has_garage else "No",
+                "Garage Spaces": listing.garage_spaces,
+                "Acres": listing.acres,
+        }
 def create_pdf_report(results, criteria):
     buffer = BytesIO()
 
