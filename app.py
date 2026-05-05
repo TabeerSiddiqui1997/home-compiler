@@ -430,7 +430,7 @@ with st.sidebar:
 
     min_garage_spaces = 0
     if requires_garage:
-    min_garage_spaces = st.number_input(
+        min_garage_spaces = st.number_input(
         "Minimum Garage Spaces",
         min_value=1,
         value=2,
