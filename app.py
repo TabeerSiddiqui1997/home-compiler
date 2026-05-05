@@ -12,51 +12,73 @@ st.markdown("""
 <style>
 .block-container {
     padding-top: 2rem;
+    max-width: 1200px;
 }
+
 .hero {
-    padding: 1.4rem;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #111827, #1f2937);
-    border: 1px solid #374151;
+    padding: 2rem;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #2563EB, #14B8A6);
+    color: white;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 14px 35px rgba(37, 99, 235, 0.25);
+}
+
+.hero h1 {
+    font-size: 2.4rem;
+    margin-bottom: 0.3rem;
+}
+
+.hero p {
+    font-size: 1.05rem;
+    opacity: 0.95;
+}
+
+.section-card {
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 1px solid #E2E8F0;
+    background-color: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
     margin-bottom: 1.5rem;
 }
-.hero h1 {
-    margin-bottom: 0.2rem;
-}
-.section-card {
-    padding: 1.2rem;
-    border-radius: 14px;
-    border: 1px solid #374151;
-    background-color: #111827;
+
+.result-card {
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 1px solid #E2E8F0;
+    background-color: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
     margin-bottom: 1.2rem;
 }
-.result-card {
-    padding: 1.2rem;
-    border-radius: 14px;
-    border: 1px solid #374151;
-    background-color: #111827;
-    margin-bottom: 1rem;
-}
-.match-strong {
-    color: #22c55e;
-    font-weight: 800;
-}
-.match-good {
-    color: #facc15;
-    font-weight: 800;
-}
-.match-weak {
-    color: #fb923c;
-    font-weight: 800;
-}
-.match-poor {
-    color: #ef4444;
-    font-weight: 800;
-}
+
 .stButton>button {
-    border-radius: 10px;
+    border-radius: 12px;
     height: 3em;
-    font-weight: 600;
+    font-weight: 700;
+    background-color: #2563EB;
+    color: white;
+    border: none;
+}
+
+.match-strong {
+    color: #16A34A;
+    font-weight: 900;
+}
+
+.match-good {
+    color: #CA8A04;
+    font-weight: 900;
+}
+
+.match-weak {
+    color: #EA580C;
+    font-weight: 900;
+}
+
+.match-poor {
+    color: #DC2626;
+    font-weight: 900;
 }
 </style>
 """, unsafe_allow_html=True)
