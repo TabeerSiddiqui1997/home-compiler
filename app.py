@@ -319,7 +319,7 @@ else:
     else:
         recommendation = "Poor Match"
 
-            return {
+        return {
                     "Address": listing.address,
                     "Fit Score": score,
                     "Recommendation": recommendation,
