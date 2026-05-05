@@ -78,6 +78,9 @@ class Listing:
     bedrooms: int
     bathrooms: float
     square_feet: int
+    has_garage: bool
+    garage_spaces: int
+    acres: float
     listing_url: str
     agent_name: str
     agent_contact: str
@@ -91,6 +94,9 @@ class BuyerCriteria:
     min_bedrooms: int
     min_bathrooms: float
     min_square_feet: int
+    requires_garage: bool
+    min_garage_spaces: int
+    min_acres: float
     min_elementary_rating: int
     min_middle_rating: int
     min_high_rating: int
@@ -250,11 +256,35 @@ def evaluate_listing(listing, criteria):
         score -= 15
         concerns.append(f"Does not meet bathroom requirement. Buyer wants {criteria.min_bathrooms}, listing has {listing.bathrooms}.")
 
-    if listing.square_feet >= criteria.min_square_feet:
-        strengths.append(f"Meets square footage requirement with {listing.square_feet:,} sq ft.")
+if listing.square_feet >= criteria.min_square_feet:
+    strengths.append(f"Meets square footage requirement with {listing.square_feet:,} sq ft.")
+else:
+    score -= 20
+    concerns.append(f"Does not meet square footage requirement...")
+
+if criteria.requires_garage:
+    if listing.has_garage and listing.garage_spaces >= criteria.min_garage_spaces:
+        strengths.append(
+            f"Meets garage requirement with a {listing.garage_spaces}-car garage."
+        )
     else:
-        score -= 20
-        concerns.append(f"Does not meet square footage requirement. Buyer wants {criteria.min_square_feet:,} sq ft, listing has {listing.square_feet:,} sq ft.")
+        score -= 15
+        concerns.append(
+            f"Does not meet garage requirement. Buyer wants at least a {criteria.min_garage_spaces}-car garage."
+        )
+else:
+    if listing.has_garage:
+        strengths.append(f"Includes a {listing.garage_spaces}-car garage.")
+
+if listing.acres >= criteria.min_acres:
+    strengths.append(
+        f"Meets land requirement with {listing.acres:.2f} acres."
+    )
+else:
+    score -= 15
+    concerns.append(
+        f"Does not meet land requirement. Buyer wants at least {criteria.min_acres:.2f} acres, listing has {listing.acres:.2f} acres."
+    )
 
     location = analyze_location_fit(listing, criteria)
 
@@ -304,6 +334,9 @@ def evaluate_listing(listing, criteria):
         "Agent Contact": listing.agent_contact,
         "Strengths": strengths,
         "Concerns": concerns,
+        "Garage": "Yes" if listing.has_garage else "No",
+        "Garage Spaces": listing.garage_spaces,
+        "Acres": listing.acres,
     }
 def create_pdf_report(results, criteria):
     buffer = BytesIO()
@@ -393,6 +426,24 @@ with st.sidebar:
     min_bedrooms = st.number_input("Minimum Bedrooms", min_value=0, value=3, step=1)
     min_bathrooms = st.number_input("Minimum Bathrooms", min_value=0.0, value=2.0, step=0.5)
     min_square_feet = st.number_input("Minimum Square Footage", min_value=0, value=2000, step=100)
+    requires_garage = st.checkbox("Requires Garage", value=False)
+
+    min_garage_spaces = 0
+    if requires_garage:
+    min_garage_spaces = st.number_input(
+        "Minimum Garage Spaces",
+        min_value=1,
+        value=2,
+        step=1
+    )
+
+    min_acres = st.number_input(
+    "Minimum Land Size in Acres",
+    min_value=0.0,
+    value=0.25,
+    step=0.05,
+    format="%.2f"
+)
 
     st.subheader("School Requirements")
     min_elementary_rating = st.slider("Minimum Elementary Rating", 1, 10, 6)
@@ -408,6 +459,9 @@ criteria = BuyerCriteria(
     min_bedrooms=min_bedrooms,
     min_bathrooms=min_bathrooms,
     min_square_feet=min_square_feet,
+    requires_garage=requires_garage,
+    min_garage_spaces=min_garage_spaces,
+    min_acres=min_acres,
     min_elementary_rating=min_elementary_rating,
     min_middle_rating=min_middle_rating,
     min_high_rating=min_high_rating,
@@ -428,16 +482,37 @@ st.caption("Enter one property at a time. After adding listings, evaluate them a
 with st.form("listing_form", clear_on_submit=True):
     tab1, tab2, tab3 = st.tabs(["Property Details", "Agent Information", "School Ratings"])
 
-    with tab1:
-        col1, col2 = st.columns(2)
-        with col1:
-            address = st.text_input("Property Address")
-            price = st.number_input("Price", min_value=0, value=450000, step=10000)
-            bedrooms = st.number_input("Bedrooms", min_value=0, value=3, step=1)
-        with col2:
-            bathrooms = st.number_input("Bathrooms", min_value=0.0, value=2.0, step=0.5)
-            square_feet = st.number_input("Square Footage", min_value=0, value=2000, step=100)
-            listing_url = st.text_input("Listing URL")
+   with tab1:
+    col1, col2 = st.columns(2)
+
+    with col1:
+        address = st.text_input("Property Address")
+        price = st.number_input("Price", min_value=0, value=450000, step=10000)
+        bedrooms = st.number_input("Bedrooms", min_value=0, value=3, step=1)
+
+    with col2:
+        bathrooms = st.number_input("Bathrooms", min_value=0.0, value=2.0, step=0.5)
+        square_feet = st.number_input("Square Footage", min_value=0, value=2000, step=100)
+        listing_url = st.text_input("Listing URL")
+        
+    has_garage = st.checkbox("Has Garage?", value=True)
+
+    garage_spaces = 0
+    if has_garage:
+        garage_spaces = st.number_input(
+            "Garage Spaces",
+            min_value=1,
+            value=2,
+            step=1
+        )
+
+    acres = st.number_input(
+        "Land Size in Acres",
+        min_value=0.0,
+        value=0.25,
+        step=0.05,
+        format="%.2f"
+    )
 
     with tab2:
         col1, col2 = st.columns(2)
@@ -470,21 +545,24 @@ with st.form("listing_form", clear_on_submit=True):
         if not address:
             st.error("Please enter a property address.")
         else:
-            listing = Listing(
-                address=address,
-                price=price,
-                bedrooms=bedrooms,
-                bathrooms=bathrooms,
-                square_feet=square_feet,
-                listing_url=listing_url,
-                agent_name=agent_name,
-                agent_contact=agent_contact,
-                schools=[
-                    School(elementary_name or "Elementary School", "elementary", elementary_rating, elementary_url),
-                    School(middle_name or "Middle School", "middle", middle_rating, middle_url),
-                    School(high_name or "High School", "high", high_rating, high_url),
-                ]
-            )
+          listing = Listing(
+    address=address,
+    price=price,
+    bedrooms=bedrooms,
+    bathrooms=bathrooms,
+    square_feet=square_feet,
+    has_garage=has_garage,
+    garage_spaces=garage_spaces,
+    acres=acres,
+    listing_url=listing_url,
+    agent_name=agent_name,
+    agent_contact=agent_contact,
+    schools=[
+        School(elementary_name or "Elementary School", "elementary", elementary_rating, elementary_url),
+        School(middle_name or "Middle School", "middle", middle_rating, middle_url),
+        School(high_name or "High School", "high", high_rating, high_url),
+    ]
+)
             st.session_state.listings.append(listing)
             st.success("Listing added successfully.")
 
