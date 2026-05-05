@@ -491,7 +491,7 @@ with tab1:
             bathrooms = st.number_input("Bathrooms", min_value=0.0, value=2.0, step=0.5)
             square_feet = st.number_input("Square Footage", min_value=0, value=2000, step=100)
             listing_url = st.text_input("Listing URL")
-
+            
 with tab2:
         col1, col2 = st.columns(2)
         with col1:
@@ -523,7 +523,7 @@ with tab4:
         has_garage = st.checkbox("Has Garage?", value=True)
 
         garage_spaces = 0
-if has_garage:
+        if has_garage:
         garage_spaces = st.number_input(
             "Garage Spaces",
             min_value=1,
