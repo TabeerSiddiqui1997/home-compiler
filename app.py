@@ -643,7 +643,7 @@ st.download_button(
 )
 st.header("Detailed Listing Analysis")
 
-    for r in st.session_state.results:
+for r in st.session_state.results:
         if r["Recommendation"] == "Strong Match":
             badge = "STRONG MATCH"
             css_class = "match-strong"
