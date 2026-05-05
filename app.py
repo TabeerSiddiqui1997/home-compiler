@@ -541,7 +541,7 @@ if has_garage:
 
         submitted = st.form_submit_button("Add Listing")
 
-    if submitted:
+if submitted:
         if not address:
             st.error("Please enter a property address.")
         else:
