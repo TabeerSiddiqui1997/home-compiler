@@ -517,7 +517,7 @@ with tab3:
             high_rating = st.slider("High School Rating", 1, 10, 7)
             high_url = st.text_input("High School Source URL")
 
-    with tab4:
+with tab4:
         st.subheader("Property Features")
 
         has_garage = st.checkbox("Has Garage?", value=True)
