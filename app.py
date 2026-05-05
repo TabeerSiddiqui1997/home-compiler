@@ -563,8 +563,8 @@ with st.form("listing_form", clear_on_submit=True):
         School(high_name or "High School", "high", high_rating, high_url),
     ]
 )
-            st.session_state.listings.append(listing)
-            st.success("Listing added successfully.")
+        st.session_state.listings.append(listing)
+        st.success("Listing added successfully.")
 
 col_a, col_b = st.columns([1, 1])
 
