@@ -539,7 +539,7 @@ if has_garage:
             format="%.2f"
     ) 
 
-        submitted = st.form_submit_button("Add Listing")
+submitted = st.form_submit_button("Add Listing")
 
 if submitted:
         if not address:
