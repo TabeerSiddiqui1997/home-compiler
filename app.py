@@ -411,8 +411,6 @@ with st.form("listing_form", clear_on_submit=True):
             st.session_state.listings.append(listing)
             st.success("Listing added successfully.")
 
-st.markdown('</div>', unsafe_allow_html=True)
-
 col_a, col_b = st.columns([1, 1])
 
 with col_a:
