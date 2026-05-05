@@ -5,6 +5,10 @@ import time
 from dataclasses import dataclass, field
 from typing import List, Optional
 from geopy.geocoders import Nominatim
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 st.set_page_config(page_title="Home Compiler", page_icon="🏡", layout="wide")
 
@@ -301,6 +305,79 @@ def evaluate_listing(listing, criteria):
         "Strengths": strengths,
         "Concerns": concerns,
     }
+def create_pdf_report(results, criteria):
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=40,
+        bottomMargin=40
+    )
+
+    styles = getSampleStyleSheet()
+    story = []
+
+    story.append(Paragraph("Home Compiler Buyer Report", styles["Title"]))
+    story.append(Spacer(1, 12))
+
+    story.append(Paragraph(
+        f"Reference Location: {criteria.reference_location}", styles["Normal"]
+    ))
+    story.append(Paragraph(
+        f"Maximum Distance: {criteria.max_distance_miles} miles", styles["Normal"]
+    ))
+    story.append(Spacer(1, 16))
+
+    for idx, r in enumerate(results, start=1):
+        story.append(Paragraph(
+            f"{idx}. {r['Address']}", styles["Heading2"]
+        ))
+
+        story.append(Paragraph(
+            f"Recommendation: {r['Recommendation']} ({r['Fit Score']}/100)",
+            styles["Normal"]
+        ))
+        story.append(Paragraph(f"Price: ${r['Price']:,}", styles["Normal"]))
+        story.append(Paragraph(
+            f"Beds/Baths: {r['Beds']} beds, {r['Baths']} baths",
+            styles["Normal"]
+        ))
+        story.append(Paragraph(
+            f"Square Footage: {r['Sq Ft']:,} sq ft",
+            styles["Normal"]
+        ))
+
+        distance_text = "Unknown" if r["Distance"] is None else f"{r['Distance']} miles"
+        story.append(Paragraph(f"Distance: {distance_text}", styles["Normal"]))
+        story.append(Paragraph(f"Listing URL: {r['Listing URL']}", styles["Normal"]))
+        story.append(Paragraph(
+            f"Agent: {r['Agent']} | {r['Agent Contact']}",
+            styles["Normal"]
+        ))
+
+        story.append(Spacer(1, 8))
+        story.append(Paragraph("Strengths", styles["Heading3"]))
+
+        for item in r["Strengths"]:
+            story.append(Paragraph(f"- {item}", styles["Normal"]))
+
+        story.append(Spacer(1, 6))
+        story.append(Paragraph("Concerns / Caveats", styles["Heading3"]))
+
+        if r["Concerns"]:
+            for item in r["Concerns"]:
+                story.append(Paragraph(f"- {item}", styles["Normal"]))
+        else:
+            story.append(Paragraph("- No major concerns found.", styles["Normal"]))
+
+        story.append(Spacer(1, 18))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
 
 st.markdown("""
 <div class="hero">
@@ -445,6 +522,86 @@ if st.session_state.listings:
         for l in st.session_state.listings
     ])
     st.dataframe(added_df, use_container_width=True)
+    st.subheader("Edit Existing Listing")
+
+if st.session_state.listings:
+    listing_options = [
+        f"{i + 1}. {listing.address}"
+        for i, listing in enumerate(st.session_state.listings)
+    ]
+
+    selected = st.selectbox("Choose listing to edit", listing_options)
+    selected_index = listing_options.index(selected)
+    selected_listing = st.session_state.listings[selected_index]
+
+    with st.form("edit_listing_form"):
+        edited_address = st.text_input("Property Address", selected_listing.address)
+        edited_price = st.number_input("Price", value=selected_listing.price, step=10000)
+        edited_bedrooms = st.number_input("Bedrooms", value=selected_listing.bedrooms, step=1)
+        edited_bathrooms = st.number_input("Bathrooms", value=selected_listing.bathrooms, step=0.5)
+        edited_square_feet = st.number_input("Square Footage", value=selected_listing.square_feet, step=100)
+        edited_listing_url = st.text_input("Listing URL", selected_listing.listing_url)
+        edited_agent_name = st.text_input("Agent Name", selected_listing.agent_name)
+        edited_agent_contact = st.text_input("Agent Contact", selected_listing.agent_contact)
+
+        st.markdown("### School Ratings")
+
+        elementary = get_best_school_by_level(selected_listing.schools, "elementary")
+        middle = get_best_school_by_level(selected_listing.schools, "middle")
+        high = get_best_school_by_level(selected_listing.schools, "high")
+
+        edited_elementary_name = st.text_input(
+            "Elementary School Name",
+            elementary.name if elementary else ""
+        )
+        edited_elementary_rating = st.slider(
+            "Elementary Rating",
+            1, 10,
+            elementary.rating if elementary and elementary.rating else 6
+        )
+
+        edited_middle_name = st.text_input(
+            "Middle School Name",
+            middle.name if middle else ""
+        )
+        edited_middle_rating = st.slider(
+            "Middle Rating",
+            1, 10,
+            middle.rating if middle and middle.rating else 6
+        )
+
+        edited_high_name = st.text_input(
+            "High School Name",
+            high.name if high else ""
+        )
+        edited_high_rating = st.slider(
+            "High School Rating",
+            1, 10,
+            high.rating if high and high.rating else 7
+        )
+
+        update_listing = st.form_submit_button("Update Listing")
+
+        if update_listing:
+            st.session_state.listings[selected_index] = Listing(
+                address=edited_address,
+                price=edited_price,
+                bedrooms=edited_bedrooms,
+                bathrooms=edited_bathrooms,
+                square_feet=edited_square_feet,
+                listing_url=edited_listing_url,
+                agent_name=edited_agent_name,
+                agent_contact=edited_agent_contact,
+                schools=[
+                    School(edited_elementary_name or "Elementary School", "elementary", edited_elementary_rating),
+                    School(edited_middle_name or "Middle School", "middle", edited_middle_rating),
+                    School(edited_high_name or "High School", "high", edited_high_rating),
+                ]
+            )
+
+            st.session_state.results = []
+            st.success("Listing updated. Click Analyze Homes again to refresh results.")
+    
 
 if st.session_state.results:
     st.header("Ranked Results Summary")
@@ -476,7 +633,14 @@ if st.session_state.results:
         file_name="home_compiler_results.csv",
         mime="text/csv"
     )
+pdf_buffer = create_pdf_report(st.session_state.results, criteria)
 
+st.download_button(
+    label="📄 Download Buyer Report (PDF)",
+    data=pdf_buffer,
+    file_name="home_compiler_report.pdf",
+    mime="application/pdf"
+)
     st.header("Detailed Listing Analysis")
 
     for r in st.session_state.results:
