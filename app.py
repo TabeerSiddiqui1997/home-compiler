@@ -413,7 +413,7 @@ with st.form("listing_form", clear_on_submit=True):
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-col_a, col_b, col_c = st.columns([1, 1, 2])
+col_a, col_b = st.columns([1, 1])
 
 with col_a:
     if st.button("Evaluate Listings"):
@@ -430,9 +430,8 @@ with col_b:
         st.session_state.results = []
         st.success("All listings cleared.")
 
-with col_c:
-    if st.session_state.listings:
-        st.info(f"{len(st.session_state.listings)} listing(s) currently added.")
+if st.session_state.listings:
+    st.success(f"{len(st.session_state.listings)} listing(s) currently added.")
 
 if st.session_state.listings:
     st.subheader("Listings Added")
