@@ -256,35 +256,27 @@ def evaluate_listing(listing, criteria):
         score -= 15
         concerns.append(f"Does not meet bathroom requirement. Buyer wants {criteria.min_bathrooms}, listing has {listing.bathrooms}.")
 
-if listing.square_feet >= criteria.min_square_feet:
-    strengths.append(f"Meets square footage requirement with {listing.square_feet:,} sq ft.")
-else:
-    score -= 20
-    concerns.append(f"Does not meet square footage requirement...")
+    if listing.square_feet >= criteria.min_square_feet:
+        strengths.append(f"Meets square footage requirement with {listing.square_feet:,} sq ft.")
+    else:
+        score -= 20
+        concerns.append(f"Does not meet square footage requirement. Buyer wants {criteria.min_square_feet:,} sq ft, listing has {listing.square_feet:,} sq ft.")
 
-if criteria.requires_garage:
-    if listing.has_garage and listing.garage_spaces >= criteria.min_garage_spaces:
-        strengths.append(
-            f"Meets garage requirement with a {listing.garage_spaces}-car garage."
-        )
+    if criteria.requires_garage:
+        if listing.has_garage and listing.garage_spaces >= criteria.min_garage_spaces:
+            strengths.append(f"Meets garage requirement with a {listing.garage_spaces}-car garage.")
+        else:
+            score -= 15
+            concerns.append(f"Does not meet garage requirement. Buyer wants at least a {criteria.min_garage_spaces}-car garage.")
+    else:
+        if listing.has_garage:
+            strengths.append(f"Includes a {listing.garage_spaces}-car garage.")
+
+    if listing.acres >= criteria.min_acres:
+        strengths.append(f"Meets land requirement with {listing.acres:.2f} acres.")
     else:
         score -= 15
-        concerns.append(
-            f"Does not meet garage requirement. Buyer wants at least a {criteria.min_garage_spaces}-car garage."
-        )
-else:
-    if listing.has_garage:
-        strengths.append(f"Includes a {listing.garage_spaces}-car garage.")
-
-if listing.acres >= criteria.min_acres:
-    strengths.append(
-        f"Meets land requirement with {listing.acres:.2f} acres."
-    )
-else:
-    score -= 15
-    concerns.append(
-        f"Does not meet land requirement. Buyer wants at least {criteria.min_acres:.2f} acres, listing has {listing.acres:.2f} acres."
-    )
+        concerns.append(f"Does not meet land requirement. Buyer wants at least {criteria.min_acres:.2f} acres, listing has {listing.acres:.2f} acres.")
 
     location = analyze_location_fit(listing, criteria)
 
@@ -320,24 +312,24 @@ else:
         recommendation = "Poor Match"
 
     return {
-                    "Address": listing.address,
-                    "Fit Score": score,
-                    "Recommendation": recommendation,
-                    "Price": listing.price,
-                    "Beds": listing.bedrooms,
-                    "Baths": listing.bathrooms,
-                    "Sq Ft": listing.square_feet,
-                    "Distance": None if location["distance"] is None else round(location["distance"], 1),
-                    "School Status": school["overall_status"],
-                    "Listing URL": listing.listing_url,
-                    "Agent": listing.agent_name,
-                    "Agent Contact": listing.agent_contact,
-                    "Strengths": strengths,
-                    "Concerns": concerns,
-                    "Garage": "Yes" if listing.has_garage else "No",
-                    "Garage Spaces": listing.garage_spaces,
-                    "Acres": listing.acres,
-            }
+        "Address": listing.address,
+        "Fit Score": score,
+        "Recommendation": recommendation,
+        "Price": listing.price,
+        "Beds": listing.bedrooms,
+        "Baths": listing.bathrooms,
+        "Sq Ft": listing.square_feet,
+        "Distance": None if location["distance"] is None else round(location["distance"], 1),
+        "School Status": school["overall_status"],
+        "Listing URL": listing.listing_url,
+        "Agent": listing.agent_name,
+        "Agent Contact": listing.agent_contact,
+        "Strengths": strengths,
+        "Concerns": concerns,
+        "Garage": "Yes" if listing.has_garage else "No",
+        "Garage Spaces": listing.garage_spaces,
+        "Acres": listing.acres,
+    }
 def create_pdf_report(results, criteria):
     buffer = BytesIO()
 
