@@ -10,6 +10,15 @@ st.set_page_config(page_title="Home Compiler", page_icon="🏡", layout="wide")
 
 st.markdown("""
 <style>
+.stApp {
+    background:
+        linear-gradient(rgba(248, 250, 252, 0.88), rgba(248, 250, 252, 0.92)),
+        url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
 .block-container {
     padding-top: 2rem;
     max-width: 1200px;
@@ -18,38 +27,19 @@ st.markdown("""
 .hero {
     padding: 2rem;
     border-radius: 22px;
-    background: linear-gradient(135deg, #2563EB, #14B8A6);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(20, 184, 166, 0.95));
     color: white;
     margin-bottom: 1.5rem;
     box-shadow: 0 14px 35px rgba(37, 99, 235, 0.25);
 }
 
-.hero h1 {
-    font-size: 2.4rem;
-    margin-bottom: 0.3rem;
-}
-
-.hero p {
-    font-size: 1.05rem;
-    opacity: 0.95;
-}
-
-.section-card {
+.section-card, .result-card {
     padding: 1.5rem;
     border-radius: 20px;
     border: 1px solid #E2E8F0;
-    background-color: #FFFFFF;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    background-color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
     margin-bottom: 1.5rem;
-}
-
-.result-card {
-    padding: 1.5rem;
-    border-radius: 20px;
-    border: 1px solid #E2E8F0;
-    background-color: #FFFFFF;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-    margin-bottom: 1.2rem;
 }
 
 .stButton>button {
@@ -61,25 +51,10 @@ st.markdown("""
     border: none;
 }
 
-.match-strong {
-    color: #16A34A;
-    font-weight: 900;
-}
-
-.match-good {
-    color: #CA8A04;
-    font-weight: 900;
-}
-
-.match-weak {
-    color: #EA580C;
-    font-weight: 900;
-}
-
-.match-poor {
-    color: #DC2626;
-    font-weight: 900;
-}
+.match-strong { color: #16A34A; font-weight: 900; }
+.match-good { color: #CA8A04; font-weight: 900; }
+.match-weak { color: #EA580C; font-weight: 900; }
+.match-poor { color: #DC2626; font-weight: 900; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -521,7 +496,6 @@ if st.session_state.results:
             badge = "POOR MATCH"
             css_class = "match-poor"
 
-        st.markdown('<div class="result-card">', unsafe_allow_html=True)
 
         st.markdown(f"""
         ### {r['Address']}
@@ -552,4 +526,3 @@ if st.session_state.results:
             else:
                 st.write("- No major concerns found.")
 
-        st.markdown('</div>', unsafe_allow_html=True)
