@@ -531,12 +531,12 @@ if has_garage:
             step=1
         )
 
-    acres = st.number_input(
-        "Land Size in Acres",
-        min_value=0.0,
-        value=0.25,
-        step=0.05,
-        format="%.2f"
+        acres = st.number_input(
+            "Land Size in Acres",
+            min_value=0.0,
+            value=0.25,
+            step=0.05,
+            format="%.2f"
     ) 
 
     submitted = st.form_submit_button("Add Listing")
