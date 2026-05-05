@@ -482,18 +482,18 @@ st.caption("Enter one property at a time. After adding listings, evaluate them a
 with st.form("listing_form", clear_on_submit=True):
     tab1, tab2, tab3 = st.tabs(["Property Details", "Agent Information", "School Ratings"])
 
-   with tab1:
-    col1, col2 = st.columns(2)
+    with tab1:
+        col1, col2 = st.columns(2)
 
-    with col1:
-        address = st.text_input("Property Address")
-        price = st.number_input("Price", min_value=0, value=450000, step=10000)
-        bedrooms = st.number_input("Bedrooms", min_value=0, value=3, step=1)
+        with col1:
+            address = st.text_input("Property Address")
+            price = st.number_input("Price", min_value=0, value=450000, step=10000)
+            bedrooms = st.number_input("Bedrooms", min_value=0, value=3, step=1)
 
-    with col2:
-        bathrooms = st.number_input("Bathrooms", min_value=0.0, value=2.0, step=0.5)
-        square_feet = st.number_input("Square Footage", min_value=0, value=2000, step=100)
-        listing_url = st.text_input("Listing URL")
+        with col2:
+            bathrooms = st.number_input("Bathrooms", min_value=0.0, value=2.0, step=0.5)
+            square_feet = st.number_input("Square Footage", min_value=0, value=2000, step=100)
+            listing_url = st.text_input("Listing URL")
         
     has_garage = st.checkbox("Has Garage?", value=True)
 
