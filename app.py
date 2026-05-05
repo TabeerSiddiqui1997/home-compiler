@@ -33,7 +33,7 @@ st.markdown("""
     box-shadow: 0 14px 35px rgba(37, 99, 235, 0.25);
 }
 
-.section-card, .result-card {
+.result-card {
     padding: 1.5rem;
     border-radius: 20px;
     border: 1px solid #E2E8F0;
