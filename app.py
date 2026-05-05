@@ -264,6 +264,33 @@ def evaluate_listing(listing, criteria):
     }
 
 st.title("🏡 Home Compiler")
+st.markdown("""
+<style>
+.main {
+    padding-top: 1rem;
+}
+.stButton>button {
+    background-color: #0E1117;
+    color: white;
+    border-radius: 8px;
+    height: 3em;
+    width: 100%;
+}
+.match-strong {
+    color: #00C853;
+    font-weight: bold;
+}
+.match-good {
+    color: #FFD600;
+    font-weight: bold;
+}
+.match-poor {
+    color: #FF3D00;
+    font-weight: bold;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.caption("A buyer criteria and listing tradeoff tool for real estate agents.")
 
 with st.sidebar:
@@ -382,83 +409,44 @@ if st.session_state.listings:
     st.write(f"{len(st.session_state.listings)} listing(s) added.")
 
 if "results" in st.session_state and st.session_state.results:
-    st.header("Ranked Results")
 
-    table_rows = []
+    st.header("🏆 Ranked Listings")
+
     for r in st.session_state.results:
-        table_rows.append({
-            "Address": r["Address"],
-            "Fit Score": r["Fit Score"],
-            "Recommendation": r["Recommendation"],
-            "Price": f"${r['Price']:,}",
-            "Beds": r["Beds"],
-            "Baths": r["Baths"],
-            "Sq Ft": f"{r['Sq Ft']:,}",
-            "Distance": "Unknown" if r["Distance"] is None else f"{r['Distance']} miles",
-            "School Status": r["School Status"],
-            "Agent": r["Agent"],
-            "Agent Contact": r["Agent Contact"],
-            "Listing URL": r["Listing URL"],
-        })
+        if r["Recommendation"] == "Strong Match":
+            badge = "🟢 STRONG MATCH"
+            css_class = "match-strong"
+        elif r["Recommendation"] == "Good Match With Caveats":
+            badge = "🟡 GOOD MATCH"
+            css_class = "match-good"
+        else:
+            badge = "🔴 POOR MATCH"
+            css_class = "match-poor"
 
-    df = pd.DataFrame(table_rows)
-    st.dataframe(df, use_container_width=True)
+        st.markdown(f"""
+        ### {r['Address']}
+        <span class="{css_class}">{badge} ({r['Fit Score']}/100)</span>
+        """, unsafe_allow_html=True)
 
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button(
-        label="Download Ranked Results as CSV",
-        data=csv,
-        file_name="home_compiler_results.csv",
-        mime="text/csv"
-    )
+        col1, col2, col3 = st.columns(3)
 
-    st.header("Buyer-Facing Reports")
+        col1.metric("Price", f"${r['Price']:,}")
+        col2.metric("Beds/Baths", f"{r['Beds']} / {r['Baths']}")
+        col3.metric("Sq Ft", f"{r['Sq Ft']:,}")
 
-    report_text = ""
+        st.write(f"📍 Distance: {'Unknown' if r['Distance'] is None else str(r['Distance']) + ' miles'}")
+        st.write(f"🔗 Listing: {r['Listing URL']}")
+        st.write(f"👤 Agent: {r['Agent']} | {r['Agent Contact']}")
 
-    for idx, r in enumerate(st.session_state.results, start=1):
-        with st.expander(f"{idx}. {r['Address']} - {r['Recommendation']} ({r['Fit Score']}/100)", expanded=True):
-            st.write(f"**Price:** ${r['Price']:,}")
-            st.write(f"**Beds/Baths:** {r['Beds']} beds, {r['Baths']} baths")
-            st.write(f"**Square Footage:** {r['Sq Ft']:,} sq ft")
-            st.write(f"**Distance from {criteria.reference_location}:** {'Unknown' if r['Distance'] is None else str(r['Distance']) + ' miles'}")
-            st.write(f"**Listing URL:** {r['Listing URL']}")
-            st.write(f"**Agent:** {r['Agent']} | {r['Agent Contact']}")
+        st.markdown("**✅ Strengths**")
+        for s in r["Strengths"]:
+            st.write(f"- {s}")
 
-            st.markdown("**Strengths**")
-            for item in r["Strengths"]:
-                st.write(f"- {item}")
+        st.markdown("**⚠️ Concerns**")
+        if r["Concerns"]:
+            for c in r["Concerns"]:
+                st.write(f"- {c}")
+        else:
+            st.write("- No major concerns")
 
-            st.markdown("**Concerns / Caveats**")
-            if r["Concerns"]:
-                for item in r["Concerns"]:
-                    st.write(f"- {item}")
-            else:
-                st.write("- No major concerns found.")
-
-            report_text += f"""
-Property {idx}: {r['Address']}
-Recommendation: {r['Recommendation']}
-Fit Score: {r['Fit Score']}/100
-Price: ${r['Price']:,}
-Beds/Baths: {r['Beds']} beds, {r['Baths']} baths
-Square Footage: {r['Sq Ft']:,} sq ft
-Distance from {criteria.reference_location}: {'Unknown' if r['Distance'] is None else str(r['Distance']) + ' miles'}
-Listing URL: {r['Listing URL']}
-Agent: {r['Agent']} | {r['Agent Contact']}
-
-Strengths:
-{chr(10).join(['- ' + x for x in r['Strengths']])}
-
-Concerns / Caveats:
-{chr(10).join(['- ' + x for x in r['Concerns']]) if r['Concerns'] else '- No major concerns found.'}
-
-{'=' * 80}
-"""
-
-    st.download_button(
-        label="Download Buyer Report as TXT",
-        data=report_text,
-        file_name="home_compiler_buyer_report.txt",
-        mime="text/plain"
-    )
+        st.markdown("---")
