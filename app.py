@@ -472,7 +472,12 @@ st.header("Listing Entry")
 st.caption("Enter one property at a time. After adding listings, evaluate them against the buyer criteria.")
 
 with st.form("listing_form", clear_on_submit=True):
-    tab1, tab2, tab3 = st.tabs(["Property Details", "Agent Information", "School Ratings"])
+   tab1, tab2, tab3, tab4 = st.tabs([
+    "Property Details",
+    "Agent Information",
+    "School Ratings",
+    "Property Features"
+])
 
     with tab1:
         col1, col2 = st.columns(2)
@@ -486,25 +491,6 @@ with st.form("listing_form", clear_on_submit=True):
             bathrooms = st.number_input("Bathrooms", min_value=0.0, value=2.0, step=0.5)
             square_feet = st.number_input("Square Footage", min_value=0, value=2000, step=100)
             listing_url = st.text_input("Listing URL")
-        
-    has_garage = st.checkbox("Has Garage?", value=True)
-
-    garage_spaces = 0
-    if has_garage:
-        garage_spaces = st.number_input(
-            "Garage Spaces",
-            min_value=1,
-            value=2,
-            step=1
-        )
-
-    acres = st.number_input(
-        "Land Size in Acres",
-        min_value=0.0,
-        value=0.25,
-        step=0.05,
-        format="%.2f"
-    )
 
     with tab2:
         col1, col2 = st.columns(2)
@@ -530,6 +516,28 @@ with st.form("listing_form", clear_on_submit=True):
             high_name = st.text_input("High School Name")
             high_rating = st.slider("High School Rating", 1, 10, 7)
             high_url = st.text_input("High School Source URL")
+
+    with tab4:
+        st.subheader("Property Features")
+
+        has_garage = st.checkbox("Has Garage?", value=True)
+
+        garage_spaces = 0
+     if has_garage:
+        garage_spaces = st.number_input(
+            "Garage Spaces",
+            min_value=1,
+            value=2,
+            step=1
+        )
+
+    acres = st.number_input(
+        "Land Size in Acres",
+        min_value=0.0,
+        value=0.25,
+        step=0.05,
+        format="%.2f"
+    ) 
 
     submitted = st.form_submit_button("Add Listing")
 
