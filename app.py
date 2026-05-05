@@ -499,7 +499,7 @@ with tab2:
         with col2:
             agent_contact = st.text_input("Agent Contact")
 
-    with tab3:
+with tab3:
         c1, c2, c3 = st.columns(3)
 
         with c1:
