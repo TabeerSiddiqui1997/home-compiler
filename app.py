@@ -641,7 +641,7 @@ st.download_button(
     file_name="home_compiler_report.pdf",
     mime="application/pdf"
 )
-    st.header("Detailed Listing Analysis")
+st.header("Detailed Listing Analysis")
 
     for r in st.session_state.results:
         if r["Recommendation"] == "Strong Match":
