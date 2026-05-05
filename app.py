@@ -523,7 +523,7 @@ with tab4:
         has_garage = st.checkbox("Has Garage?", value=True)
 
         garage_spaces = 0
-     if has_garage:
+if has_garage:
         garage_spaces = st.number_input(
             "Garage Spaces",
             min_value=1,
