@@ -492,7 +492,7 @@ with tab1:
             square_feet = st.number_input("Square Footage", min_value=0, value=2000, step=100)
             listing_url = st.text_input("Listing URL")
 
-    with tab2:
+with tab2:
         col1, col2 = st.columns(2)
         with col1:
             agent_name = st.text_input("Agent Name")
