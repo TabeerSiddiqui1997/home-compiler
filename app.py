@@ -609,7 +609,11 @@ if st.session_state.listings:
         f"{i + 1}. {listing.address}"
         for i, listing in enumerate(st.session_state.listings)
     ]
-
+    
+    listing_options = [
+    f"{listing.address} (${listing.price:,})"
+    for listing in st.session_state.listings
+]
     selected = st.selectbox("Choose listing to edit", listing_options)
 
 selected_index = listing_options.index(selected)
