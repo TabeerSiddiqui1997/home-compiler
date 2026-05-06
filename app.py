@@ -602,48 +602,20 @@ if st.session_state.listings:
         for l in st.session_state.listings
     ])
     st.dataframe(added_df, use_container_width=True)
+if st.session_state.listings:
     st.subheader("Edit Existing Listing")
 
-if st.session_state.listings:
     listing_options = [
-        f"{i + 1}. {listing.address}"
+        f"{i + 1}. {listing.address} (${listing.price:,})"
         for i, listing in enumerate(st.session_state.listings)
     ]
-    
-    listing_options = [
-    f"{listing.address} (${listing.price:,})"
-    for listing in st.session_state.listings
-]
+
     selected = st.selectbox("Choose listing to edit", listing_options)
 
-selected_index = listing_options.index(selected)
+    selected_index = listing_options.index(selected)
+    selected_listing = st.session_state.listings[selected_index]
 
-selected_listing = st.session_state.listings[selected_index]
-
-edited_has_garage = st.checkbox(
-    "Has Garage?",
-    value=selected_listing.has_garage
-)
-
-edited_garage_spaces = 0
-
-if edited_has_garage:
-    edited_garage_spaces = st.number_input(
-        "Garage Spaces",
-        min_value=1,
-        value=selected_listing.garage_spaces if selected_listing.garage_spaces else 1,
-        step=1
-    )
-
-edited_acres = st.number_input(
-    "Land Size in Acres",
-    min_value=0.0,
-    value=float(selected_listing.acres),
-    step=0.05,
-    format="%.2f"
-)
-
-with st.form("edit_listing_form"):
+    with st.form("edit_listing_form"):
         edited_address = st.text_input("Property Address", selected_listing.address)
         edited_price = st.number_input("Price", value=selected_listing.price, step=10000)
         edited_bedrooms = st.number_input("Bedrooms", value=selected_listing.bedrooms, step=1)
@@ -652,6 +624,30 @@ with st.form("edit_listing_form"):
         edited_listing_url = st.text_input("Listing URL", selected_listing.listing_url)
         edited_agent_name = st.text_input("Agent Name", selected_listing.agent_name)
         edited_agent_contact = st.text_input("Agent Contact", selected_listing.agent_contact)
+
+        st.markdown("### Property Features")
+
+        edited_has_garage = st.checkbox(
+            "Has Garage?",
+            value=selected_listing.has_garage
+        )
+
+        edited_garage_spaces = 0
+        if edited_has_garage:
+            edited_garage_spaces = st.number_input(
+                "Garage Spaces",
+                min_value=1,
+                value=selected_listing.garage_spaces if selected_listing.garage_spaces else 1,
+                step=1
+            )
+
+        edited_acres = st.number_input(
+            "Land Size in Acres",
+            min_value=0.0,
+            value=float(selected_listing.acres),
+            step=0.05,
+            format="%.2f"
+        )
 
         st.markdown("### School Ratings")
 
@@ -692,68 +688,27 @@ with st.form("edit_listing_form"):
         update_listing = st.form_submit_button("Update Listing")
 
         if update_listing:
-            edited_has_garage = st.checkbox(
-    "Has Garage?",
-    value=selected_listing.has_garage
-)
+            st.session_state.listings[selected_index] = Listing(
+                address=edited_address,
+                price=edited_price,
+                bedrooms=edited_bedrooms,
+                bathrooms=edited_bathrooms,
+                square_feet=edited_square_feet,
+                has_garage=edited_has_garage,
+                garage_spaces=edited_garage_spaces,
+                acres=edited_acres,
+                listing_url=edited_listing_url,
+                agent_name=edited_agent_name,
+                agent_contact=edited_agent_contact,
+                schools=[
+                    School(edited_elementary_name or "Elementary School", "elementary", edited_elementary_rating),
+                    School(edited_middle_name or "Middle School", "middle", edited_middle_rating),
+                    School(edited_high_name or "High School", "high", edited_high_rating),
+                ]
+            )
 
-edited_garage_spaces = 0
-
-edited_has_garage = st.checkbox(
-    "Has Garage?",
-    value=selected_listing.has_garage
-)
-
-edited_garage_spaces = 0
-
-if edited_has_garage:
-    edited_garage_spaces = st.number_input(
-        "Garage Spaces",
-        min_value=1,
-        value=selected_listing.garage_spaces if selected_listing.garage_spaces else 1,
-        step=1
-    )
-
-edited_acres = st.number_input(
-    "Land Size in Acres",
-    min_value=0.0,
-    value=float(selected_listing.acres),
-    step=0.05,
-    format="%.2f"
-)
-
-st.session_state.listings[selected_index] = Listing(
-    address=edited_address,
-    price=edited_price,
-    bedrooms=edited_bedrooms,
-    bathrooms=edited_bathrooms,
-    square_feet=edited_square_feet,
-    has_garage=edited_has_garage,
-    garage_spaces=edited_garage_spaces,
-    acres=edited_acres,
-    listing_url=edited_listing_url,
-    agent_name=edited_agent_name,
-    agent_contact=edited_agent_contact,
-    schools=[
-        School(
-            edited_elementary_name or "Elementary School",
-            "elementary",
-            edited_elementary_rating
-        ),
-        School(
-            edited_middle_name or "Middle School",
-            "middle",
-            edited_middle_rating
-        ),
-        School(
-            edited_high_name or "High School",
-            "high",
-            edited_high_rating
-        ),
-    ]
-)
-st.session_state.results = []
-st.success("Listing updated. Click Analyze Homes again to refresh results.")
+            st.session_state.results = []
+            st.success("Listing updated. Click Evaluate Listings again to refresh results.")
     
 
 if st.session_state.results:
