@@ -472,14 +472,14 @@ st.header("Listing Entry")
 st.caption("Enter one property at a time. After adding listings, evaluate them against the buyer criteria.")
 
 with st.form("listing_form", clear_on_submit=True):
-   tab1, tab2, tab3, tab4 = st.tabs([
-    "Property Details",
-    "Agent Information",
-    "School Ratings",
-    "Property Features"
-])
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "Property Details",
+        "Agent Information",
+        "School Ratings",
+        "Property Features"
+    ])
 
-with tab1:
+    with tab1:
         col1, col2 = st.columns(2)
 
         with col1:
@@ -491,15 +491,17 @@ with tab1:
             bathrooms = st.number_input("Bathrooms", min_value=0.0, value=2.0, step=0.5)
             square_feet = st.number_input("Square Footage", min_value=0, value=2000, step=100)
             listing_url = st.text_input("Listing URL")
-            
-with tab2:
+
+    with tab2:
         col1, col2 = st.columns(2)
+
         with col1:
             agent_name = st.text_input("Agent Name")
+
         with col2:
             agent_contact = st.text_input("Agent Contact")
 
-with tab3:
+    with tab3:
         c1, c2, c3 = st.columns(3)
 
         with c1:
@@ -517,19 +519,19 @@ with tab3:
             high_rating = st.slider("High School Rating", 1, 10, 7)
             high_url = st.text_input("High School Source URL")
 
-with tab4:
+    with tab4:
         st.subheader("Property Features")
 
         has_garage = st.checkbox("Has Garage?", value=True)
 
         garage_spaces = 0
-if has_garage:
-        garage_spaces = st.number_input(
-            "Garage Spaces",
-            min_value=1,
-            value=2,
-            step=1
-        )
+        if has_garage:
+            garage_spaces = st.number_input(
+                "Garage Spaces",
+                min_value=1,
+                value=2,
+                step=1
+            )
 
         acres = st.number_input(
             "Land Size in Acres",
@@ -537,9 +539,9 @@ if has_garage:
             value=0.25,
             step=0.05,
             format="%.2f"
-    ) 
+        )
 
-submitted = st.form_submit_button("Add Listing")
+    submitted = st.form_submit_button("Add Listing")
 
 if submitted:
         if not address:
