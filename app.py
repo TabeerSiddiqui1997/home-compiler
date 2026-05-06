@@ -670,12 +670,13 @@ if st.session_state.listings:
 
 edited_garage_spaces = 0
 
-if edited_has_garage = st.checkbox(
+edited_has_garage = st.checkbox(
     "Has Garage?",
     value=selected_listing.has_garage
 )
 
 edited_garage_spaces = 0
+
 if edited_has_garage:
     edited_garage_spaces = st.number_input(
         "Garage Spaces",
