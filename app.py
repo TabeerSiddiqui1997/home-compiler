@@ -716,8 +716,8 @@ st.session_state.listings[selected_index] = Listing(
         ),
     ]
 )
-        st.session_state.results = []
-            st.success("Listing updated. Click Analyze Homes again to refresh results.")
+    st.session_state.results = []
+    st.success("Listing updated. Click Analyze Homes again to refresh results.")
     
 
 if st.session_state.results:
