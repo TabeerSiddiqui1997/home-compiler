@@ -616,7 +616,7 @@ if st.session_state.listings:
 
 edited_has_garage = st.checkbox(
     "Has Garage?",
-    value=selected_listing.has_garage
+value=selected_listing.has_garage
 )
 
 edited_garage_spaces = 0
