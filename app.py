@@ -118,7 +118,7 @@ def get_coordinates(location_text):
     for loc in variations:
         try:
             result = geolocator.geocode(loc, timeout=10)
-            time.sleep(1)
+            time.sleep(0.4)
             if result:
                 return result.latitude, result.longitude
         except Exception:
