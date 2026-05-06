@@ -638,7 +638,7 @@ edited_acres = st.number_input(
     format="%.2f"
 )
 
-    with st.form("edit_listing_form"):
+with st.form("edit_listing_form"):
         edited_address = st.text_input("Property Address", selected_listing.address)
         edited_price = st.number_input("Price", value=selected_listing.price, step=10000)
         edited_bedrooms = st.number_input("Bedrooms", value=selected_listing.bedrooms, step=1)
