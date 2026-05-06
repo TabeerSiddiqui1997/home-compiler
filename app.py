@@ -663,22 +663,59 @@ if st.session_state.listings:
         update_listing = st.form_submit_button("Update Listing")
 
         if update_listing:
-            st.session_state.listings[selected_index] = Listing(
-                address=edited_address,
-                price=edited_price,
-                bedrooms=edited_bedrooms,
-                bathrooms=edited_bathrooms,
-                square_feet=edited_square_feet,
-                listing_url=edited_listing_url,
-                agent_name=edited_agent_name,
-                agent_contact=edited_agent_contact,
-                schools=[
-                    School(edited_elementary_name or "Elementary School", "elementary", edited_elementary_rating),
-                    School(edited_middle_name or "Middle School", "middle", edited_middle_rating),
-                    School(edited_high_name or "High School", "high", edited_high_rating),
-                ]
-            )
+            edited_has_garage = st.checkbox(
+    "Has Garage?",
+    value=selected_listing.has_garage
+)
 
+edited_garage_spaces = 0
+
+if edited_has_garage:
+    edited_garage_spaces = st.number_input(
+        "Garage Spaces",
+        min_value=1,
+        value=selected_listing.garage_spaces if selected_listing.garage_spaces else 1,
+        step=1
+    )
+
+edited_acres = st.number_input(
+    "Land Size in Acres",
+    min_value=0.0,
+    value=float(selected_listing.acres),
+    step=0.05,
+    format="%.2f"
+)
+
+st.session_state.listings[selected_index] = Listing(
+    address=edited_address,
+    price=edited_price,
+    bedrooms=edited_bedrooms,
+    bathrooms=edited_bathrooms,
+    square_feet=edited_square_feet,
+    has_garage=edited_has_garage,
+    garage_spaces=edited_garage_spaces,
+    acres=edited_acres,
+    listing_url=edited_listing_url,
+    agent_name=edited_agent_name,
+    agent_contact=edited_agent_contact,
+    schools=[
+        School(
+            edited_elementary_name or "Elementary School",
+            "elementary",
+            edited_elementary_rating
+        ),
+        School(
+            edited_middle_name or "Middle School",
+            "middle",
+            edited_middle_rating
+        ),
+        School(
+            edited_high_name or "High School",
+            "high",
+            edited_high_rating
+        ),
+    ]
+)
             st.session_state.results = []
             st.success("Listing updated. Click Analyze Homes again to refresh results.")
     
