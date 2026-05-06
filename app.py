@@ -613,7 +613,6 @@ if st.session_state.listings:
     selected = st.selectbox("Choose listing to edit", listing_options)
     selected_index = listing_options.index(selected)
     selected_listing = st.session_state.listings[selected_index]
-    selected_listing = st.session_state.listings[selected_index]
 
 edited_has_garage = st.checkbox(
     "Has Garage?",
