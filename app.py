@@ -613,6 +613,30 @@ if st.session_state.listings:
     selected = st.selectbox("Choose listing to edit", listing_options)
     selected_index = listing_options.index(selected)
     selected_listing = st.session_state.listings[selected_index]
+    selected_listing = st.session_state.listings[selected_index]
+
+edited_has_garage = st.checkbox(
+    "Has Garage?",
+    value=selected_listing.has_garage
+)
+
+edited_garage_spaces = 0
+
+if edited_has_garage:
+    edited_garage_spaces = st.number_input(
+        "Garage Spaces",
+        min_value=1,
+        value=selected_listing.garage_spaces if selected_listing.garage_spaces else 1,
+        step=1
+    )
+
+edited_acres = st.number_input(
+    "Land Size in Acres",
+    min_value=0.0,
+    value=float(selected_listing.acres),
+    step=0.05,
+    format="%.2f"
+)
 
     with st.form("edit_listing_form"):
         edited_address = st.text_input("Property Address", selected_listing.address)
